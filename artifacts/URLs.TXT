@@ -1,0 +1,4 @@
+URL01 - Public GitHub Repository - https://app.circleci.com/pipelines/github/cyberranjith/udacity-auto-deploy-project
+URL02 - Public URL of S3 Bucket - 
+URL03 - Public URL of CloudFront distribution - 
+URL04 - Public URL of back-end server in EC2 - 

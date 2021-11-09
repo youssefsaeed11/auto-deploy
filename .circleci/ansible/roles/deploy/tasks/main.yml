@@ -1,0 +1,30 @@
+---
+- name: "create directory in remote server"
+  become: yes
+  file:
+    path: /etc/autodeploy
+    state: directory
+
+- name: "copy the back end files"
+  become: yes
+  unarchive:
+    src: backend.tar.gz
+    dest: /etc/autodeploy
+
+- name: "install dependencies"
+  become: yes
+  shell:
+    cmd: npm install
+    chdir: /etc/autodeploy
+
+- name: "build backend"
+  become: yes
+  shell:
+    cmd: npm run build
+    chdir: /etc/autodeploy
+
+- name: "run backend"
+  become: yes 
+  command: pm2 start dist/main.js
+  args:
+      chdir: /etc/autodeploy
