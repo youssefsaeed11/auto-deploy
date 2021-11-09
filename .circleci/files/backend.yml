@@ -33,7 +33,7 @@ Resources:
       InstanceType: t2.micro
       SecurityGroups:
         - Ref: InstanceSecurityGroup
-      KeyName: Custom_EC2_Key_Pair
+      KeyName: udacity
       ImageId: ami-09e67e426f25ce0d7 
       Tags:
         - Key: Name
