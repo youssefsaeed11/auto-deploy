@@ -208,7 +208,6 @@ jobs:
           root: ~/
           paths:
             - project/.circleci/outputs/
-      - destroy_environment
 
   deploy-frontend:
     docker:
@@ -408,12 +407,12 @@ workflows:
               only: master
       - configure-infrastructure:
           requires: [deploy-infrastructure]
-      - run-migrations:
+      - run_db_migrations_for_backend:
           requires: [configure-infrastructure]
       - deploy-frontend:
-          requires: [run-migrations]
+          requires: [run_db_migrations_for_backend]
       - deploy-backend:
-          requires: [run-migrations]
+          requires: [run_db_migrations_for_backend]
       - smoke-test:
           requires: [deploy-backend, deploy-frontend]
       - cloudfront-update:
