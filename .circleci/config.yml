@@ -339,7 +339,7 @@ jobs:
               list-exports --query "Exports[?Name==\`WorkflowID\`].Value" \
               --no-paginate --output text)
             echo ${OLD_WORKFLOW_ID}
-            curl -H "Content-Type: text/plain" -H "token: 43c94972-4c94-44c3-a759-bd66fdd2fc6b" --request PUT --data ${OLD_WORKFLOW_ID} https://api.memstash.io/values/oldworkflowid_${CIRCLE_WORKFLOW_ID:0:7}
+            curl -H "Content-Type: text/plain" -H "token: 43c94972-4c94-44c3-a759-bd66fdd2fc6b" --request PUT --data ${OLD_WORKFLOW_ID} --url https://api.memstash.io/values/oldworkflowid_${CIRCLE_WORKFLOW_ID:0:7}
       - run:
           name: Update cloudfront distribution
           command: |
@@ -359,7 +359,7 @@ jobs:
       - run:
           name: Get old stack workflow id and remove old stacks and files
           command: |
-            OLD_WORKFLOW_ID=$(curl -H "token: 43c94972-4c94-44c3-a759-bd66fdd2fc6b" --request GET https://api.memstash.io/values/oldworkflowid_${CIRCLE_WORKFLOW_ID:0:7})      
+            OLD_WORKFLOW_ID=$(curl -H "token: 43c94972-4c94-44c3-a759-bd66fdd2fc6b" --request GET --url https://api.memstash.io/values/oldworkflowid_${CIRCLE_WORKFLOW_ID:0:7})      
             echo ${OLD_WORKFLOW_ID}
             STACKS=($(aws cloudformation list-stacks --query "StackSummaries[*].StackName" \
               --stack-status-filter CREATE_COMPLETE --no-paginate --output text))
@@ -371,30 +371,6 @@ jobs:
               aws cloudformation delete-stack --stack-name udapeople-frontend-${OLD_WORKFLOW_ID}
             fi
 
-  # test_caching_logic:
-  #   docker:
-  #     - image: amazon/aws-cli
-  #   steps:
-  #     - checkout
-  #     - run: yum install -y tar gzip
-  #     - attach_workspace:
-  #         at: ~/
-  #     - run:
-  #         name: test backend url
-  #         command: |
-  #           BACKEND_URL=$(curl -H "token: 43c94972-4c94-44c3-a759-bd66fdd2fc6b" --request GET https://api.memstash.io/values/backendurl_${CIRCLE_WORKFLOW_ID:0:7})
-  #           echo $BACKEND_URL
-  #     - run: 
-  #         name:
-  #         command: |
-  #           BACKEEND_IP=$(cat ~/project/.circleci/ansible/inventory.txt)
-  #           echo $BACKEEND_IP
-  #     - run:
-  #         name:
-  #         command: |
-  #           DB_MIGRATION_STATUS=$(curl -H "token: 43c94972-4c94-44c3-a759-bd66fdd2fc6b" --request GET https://api.memstash.io/values/migration_${CIRCLE_WORKFLOW_ID:0:7})
-  #           echo "${DB_MIGRATION_STATUS}"
-            
 
 workflows:
   default:
