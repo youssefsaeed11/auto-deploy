@@ -304,23 +304,23 @@ jobs:
             apk add --no-cache --upgrade bash
             pip3 install awscli
       - run:
-          name: smoke test backend
+          name: smoke test frontend
           command: |
-            BACKEND_URL=$(curl -H "token: 43c94972-4c94-44c3-a759-bd66fdd2fc6b" --request GET https://api.memstash.io/values/backendurl_${CIRCLE_WORKFLOW_ID:0:7})
-            API_STATUS_URL=http://$BACKEND_URL:3030/api/status/
-            echo $API_STATUS_URL
-            if curl -s --head $API_STATUS_URL
+            FRONTEND_URL=http://udapeople-${CIRCLE_WORKFLOW_ID:0:7}.s3-website-us-east-1.amazonaws.com
+            echo $FRONTEND_URL
+            if curl -s ${FRONTEND_URL} | grep "Welcome"
             then
               exit 0
             else
               exit 1
             fi
       - run:
-          name: smoke test frontend
+          name: smoke test backend
           command: |
-            FRONTEND_URL=http://udapeople-${CIRCLE_WORKFLOW_ID:0:7}.s3-website-us-east-1.amazonaws.com
-            echo $FRONTEND_URL
-            if curl -s ${FRONTEND_URL} | grep "Welcome"
+            BACKEND_URL=$(curl -H "token: 43c94972-4c94-44c3-a759-bd66fdd2fc6b" --request GET https://api.memstash.io/values/backendurl_${CIRCLE_WORKFLOW_ID:0:7})
+            API_STATUS_URL=http://$BACKEND_URL:3030/api/status/
+            echo $API_STATUS_URL
+            if curl -s --head $API_STATUS_URL
             then
               exit 0
             else
