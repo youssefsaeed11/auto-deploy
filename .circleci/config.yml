@@ -183,7 +183,7 @@ jobs:
             ansible-playbook -i ~/project/.circleci/ansible/inventory.txt ~/project/.circleci/ansible/configure-server.yml
       - destroy-environment      
 
-   run_db_migrations_for_backend:
+  run_db_migrations_for_backend:
     docker:
       - image: circleci/node:13.8.0
     steps:
