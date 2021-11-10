@@ -317,13 +317,19 @@ jobs:
       - run:
           name: smoke test backend
           command: |
-            BACKEND_URL=$(curl -H "token: 43c94972-4c94-44c3-a759-bd66fdd2fc6b" --request GET https://api.memstash.io/values/backendurl_${CIRCLE_WORKFLOW_ID:0:7})
-            API_STATUS_URL=http://$BACKEND_URL:3030/api/status/
-            echo $API_STATUS_URL
-            if curl -s --head $API_STATUS_URL
+            # Fetch and prepare the BACKEND_IP env var
+            export BACKEND_IP=$(aws ec2 describe-instances \
+              --query 'Reservations[*].Instances[*].PublicIpAddress' \
+              --filters "Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID:0:7}" \
+              --output text)
+            export API_URL="http://${BACKEND_IP}:3030"
+            echo "API_URL = ${API_URL}"
+            if curl "${API_URL}/api/status" | grep "ok"
             then
+              echo SUCCESS
               exit 0
             else
+              echo FAIL
               exit 1
             fi
       - destroy-environment
