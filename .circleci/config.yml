@@ -147,7 +147,7 @@ jobs:
               --filters "Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID:0:7}" \
               --no-paginate --output text)
             echo $BACKEND_URL
-            curl -H "Content-Type: text/plain" -H "token: a2575172-4808-4e18-9482-27506ac651b0" --request PUT --data ${BACKEND_URL} https://api.memstash.io/values/backendurl_${CIRCLE_WORKFLOW_ID:0:7}
+            curl -H "Content-Type: text/plain" -H "token: 43c94972-4c94-44c3-a759-bd66fdd2fc6b" --request PUT --data ${BACKEND_URL} https://api.memstash.io/values/backendurl_${CIRCLE_WORKFLOW_ID:0:7}
       - run:
           name: Add back-end public ip to ansible inventory
           command: |
@@ -213,9 +213,9 @@ jobs:
           working_directory: ./backend
           command: |
             if grep -q "has been executed successfully" migrations_output_log.txt; then 
-              curl -H "Content-Type: text/plain" -H "token: a2575172-4808-4e18-9482-27506ac651b0" --request PUT --data "1" https://api.memstash.io/values/migration_${CIRCLE_WORKFLOW_ID:0:7}
+              curl -H "Content-Type: text/plain" -H "token: 43c94972-4c94-44c3-a759-bd66fdd2fc6b" --request PUT --data "1" https://api.memstash.io/values/migration_${CIRCLE_WORKFLOW_ID:0:7}
             else
-              curl -H "Content-Type: text/plain" -H "token: a2575172-4808-4e18-9482-27506ac651b0" --request PUT --data "0" https://api.memstash.io/values/migration_${CIRCLE_WORKFLOW_ID:0:7}
+              curl -H "Content-Type: text/plain" -H "token: 43c94972-4c94-44c3-a759-bd66fdd2fc6b" --request PUT --data "0" https://api.memstash.io/values/migration_${CIRCLE_WORKFLOW_ID:0:7}
             fi
       - destroy-environment
       - revert-migrations
