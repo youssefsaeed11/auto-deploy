@@ -183,31 +183,42 @@ jobs:
             ansible-playbook -i ~/project/.circleci/ansible/inventory.txt ~/project/.circleci/ansible/configure-server.yml
       - destroy-environment      
 
-  run_db_migrations_for_backend:
+  run-migrations:
     docker:
       - image: circleci/node:13.8.0
     steps:
       - checkout
-      - attach_workspace:
-          at: ~/
       - run:
-          name: Run DB migrations
+          name: Run migrations
           command: |
             cd backend
-            npm run migrations >> migration_output.txt
-            cat migration_output.txt
+            echo ENVIRONMENT=$ENVIRONMENT > ".env"
+            echo TYPEORM_CONNECTION=$TYPEORM_CONNECTION >> ".env"
+            echo TYPEORM_MIGRATIONS_DIR=$TYPEORM_MIGRATIONS_DIR >> ".env"
+            echo TYPEORM_ENTITIES=$TYPEORM_ENTITIES >> ".env"
+            echo TYPEORM_MIGRATIONS=$TYPEORM_MIGRATIONS >> ".env"
+            echo TYPEORM_HOST=$TYPEORM_HOST >> ".env"
+            echo TYPEORM_PORT=$TYPEORM_PORT >> ".env"
+            echo TYPEORM_USERNAME=$TYPEORM_USERNAME >> ".env"
+            echo TYPEORM_PASSWORD=$TYPEORM_PASSWORD >> ".env"
+            echo TYPEORM_DATABASE=$TYPEORM_DATABASE >> ".env"
+            npm install
+            npm run build
+            touch migrations_output_log.txt
+            npm run migrations >> migrations_output_log.txt
+            cat migrations_output_log.txt
+
       - run:
-          name: Store migration result in a file.
+          name: Send migration results to memstash
+          working_directory: ./backend
           command: |
-            cd backend
-            if grep -q "has been executed successfully." migration_output.txt
-            then
-              touch ~/project/.circleci/outputs/db_migration_success
+            if grep -q "has been executed successfully" migrations_output_log.txt; then 
+              curl -H "Content-Type: text/plain" -H "token: a2575172-4808-4e18-9482-27506ac651b0" --request PUT --data "1" https://api.memstash.io/values/migration_${CIRCLE_WORKFLOW_ID:0:7}
+            else
+              curl -H "Content-Type: text/plain" -H "token: a2575172-4808-4e18-9482-27506ac651b0" --request PUT --data "0" https://api.memstash.io/values/migration_${CIRCLE_WORKFLOW_ID:0:7}
             fi
-      - persist_to_workspace:
-          root: ~/
-          paths:
-            - project/.circleci/outputs/
+      - destroy-environment
+      - revert-migrations
 
   deploy-frontend:
     docker:
@@ -407,12 +418,12 @@ workflows:
               only: master
       - configure-infrastructure:
           requires: [deploy-infrastructure]
-      - run_db_migrations_for_backend:
+      - run-migrations:
           requires: [configure-infrastructure]
       - deploy-frontend:
-          requires: [run_db_migrations_for_backend]
+          requires: [run-migrations]
       - deploy-backend:
-          requires: [run_db_migrations_for_backend]
+          requires: [run-migrations]
       - smoke-test:
           requires: [deploy-backend, deploy-frontend]
       - cloudfront-update:
