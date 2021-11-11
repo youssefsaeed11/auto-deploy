@@ -26,7 +26,7 @@
 - name: start app
   become: yes
   shell: |
-    cd ~/etc/autodeploy
+    cd /etc/autodeploy/
     npm install
     pm2 stop default
     pm2 start npm -- start
