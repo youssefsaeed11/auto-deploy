@@ -358,25 +358,25 @@ jobs:
       - destroy-environment
       - revert-migrations
 
-  cleanup:
-    docker:
-      - image: amazon/aws-cli
-    steps:
-      - checkout            
-      - run:
-          name: Get old stack workflow id and remove old stacks and files
-          command: |
-            OLD_WORKFLOW_ID=$(curl -H "token: 43c94972-4c94-44c3-a759-bd66fdd2fc6b" --request GET --url https://api.memstash.io/values/oldworkflowid_${CIRCLE_WORKFLOW_ID:0:7})      
-            echo ${OLD_WORKFLOW_ID}
-            STACKS=($(aws cloudformation list-stacks --query "StackSummaries[*].StackName" \
-              --stack-status-filter CREATE_COMPLETE --no-paginate --output text))
-            echo ${STACKS}
-            if [[ "${STACKS[@]}" =~ "${OLD_WORKFLOW_ID}" ]]
-            then              
-              aws cloudformation delete-stack --stack-name udapeople-backend-${OLD_WORKFLOW_ID}
-              aws s3 rb s3://udapeople-${OLD_WORKFLOW_ID} --force
-              aws cloudformation delete-stack --stack-name udapeople-frontend-${OLD_WORKFLOW_ID}
-            fi
+#  cleanup:
+#    docker:
+#      - image: amazon/aws-cli
+#    steps:
+#      - checkout            
+#      - run:
+#          name: Get old stack workflow id and remove old stacks and files
+#          command: |
+#            OLD_WORKFLOW_ID=$(curl -H "token: 43c94972-4c94-44c3-a759-bd66fdd2fc6b" --request GET --url https://api.memstash.io/values/oldworkflowid_${CIRCLE_WORKFLOW_ID:0:7})      
+#            echo ${OLD_WORKFLOW_ID}
+#            STACKS=($(aws cloudformation list-stacks --query "StackSummaries[*].StackName" \
+#              --stack-status-filter CREATE_COMPLETE --no-paginate --output text))
+#            echo ${STACKS}
+#            if [[ "${STACKS[@]}" =~ "${OLD_WORKFLOW_ID}" ]]
+#            then              
+#              aws cloudformation delete-stack --stack-name udapeople-backend-${OLD_WORKFLOW_ID}
+#              aws s3 rb s3://udapeople-${OLD_WORKFLOW_ID} --force
+#              aws cloudformation delete-stack --stack-name udapeople-frontend-${OLD_WORKFLOW_ID}
+#            fi
 
 
 workflows:
@@ -409,5 +409,5 @@ workflows:
           requires: [deploy-backend, deploy-frontend]
       - cloudfront-update:
           requires: [smoke-test]
-      - cleanup:
-          requires: [cloudfront-update]
+      #- cleanup:
+          #requires: [cloudfront-update]
