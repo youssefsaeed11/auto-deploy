@@ -1,3 +1,0 @@
-github : https://github.com/youssefsaeed11/auto-deploy
-circleci : https://app.circleci.com/pipelines/github/youssefsaeed11/auto-deploy?branch=master
-app cloudfront :d25thnpm4kdrc7.cloudfront.net
