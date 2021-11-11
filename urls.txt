@@ -1,0 +1,11 @@
+URL01 : 
+https://github.com/youssefsaeed11/auto-deploy
+
+URL02 :
+http://udapeople-c8a988d.s3-website.eu-central-1.amazonaws.com
+
+URL03:
+d25thnpm4kdrc7.cloudfront.net
+
+URL04:
+ec2-18-197-227-201.eu-central-1.compute.amazonaws.com
