@@ -30,7 +30,7 @@ async function bootstrap() {
     .setBasePath(apiVersionPrefix)
     .addBearerAuth()
     .build();
-  const document = SwaggerModule.createDocument(app, options);
+  const document = SwaggerModule.,createDocument(app, options);
   SwaggerModule.setup(`api/${apiVersionPrefix}`, app, document);
   const config: ConfigService = app.get('ConfigService');
   const whitelist = config.CORS_WHITELIST;
